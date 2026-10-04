@@ -308,6 +308,13 @@
       gap: 10px;
     }
 
+    .shortcut-hint {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
     .answer {
       display: flex;
       align-items: center;
@@ -572,6 +579,7 @@
         <p class="eyebrow" id="category">Our solar system</p>
         <h1 class="question-title" id="question">Loading your mission…</h1>
         <div class="answers" id="answers"></div>
+        <p class="shortcut-hint">Press 1, 2, 3, or 4 to choose the matching answer.</p>
         <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
         <button class="next-button" id="next-button" type="button" hidden>
           <span id="next-label">Next question</span><span aria-hidden="true">→</span>
@@ -730,6 +738,18 @@
       nextButton.hidden = false;
       nextButton.focus({ preventScroll: true });
     }
+
+    document.addEventListener("keydown", event => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || answered || questionView.hidden) return;
+      if (event.key < "1" || event.key > "4") return;
+
+      const selected = Number(event.key) - 1;
+      const selectedButton = answers.querySelectorAll(".answer")[selected];
+      if (!selectedButton || selectedButton.disabled) return;
+
+      event.preventDefault();
+      chooseAnswer(selected, selectedButton);
+    });
 
     function showResults() {
       const percentage = score / questions.length;
